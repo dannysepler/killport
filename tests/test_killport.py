@@ -6,22 +6,22 @@ import signal
 
 import pytest
 
-from killport import get_processes, kill_ports
+from killport import TERM_SIGNAL, get_processes, kill_ports
 
 PORT = 2345
 
 
 @pytest.fixture(scope='session', autouse=True)
 def term_handler():
-    # if a SIGINT command is given, pytest abruptly stops
+    # if a TERM_SIGNAL (such as SIGTERM) is given, pytest abruptly stops
     # https://github.com/pytest-dev/pytest/issues/5243
 
     def do_nothing(*args, **kwargs):
         ...
 
-    orig = signal.signal(signal.SIGINT, do_nothing)
+    orig = signal.signal(TERM_SIGNAL, do_nothing)
     yield
-    signal.signal(signal.SIGINT, orig)
+    signal.signal(TERM_SIGNAL, orig)
 
 
 @pytest.fixture

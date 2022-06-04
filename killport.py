@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 import argparse
-from signal import SIGINT
+import sys
 from typing import NamedTuple
 
 import psutil
+
+if sys.platform.startswith('win'):
+    # The SIGTERM command doesn't work on windows
+    # https://stackoverflow.com/a/47314406
+    from signal import CTRL_BREAK_EVENT as TERM_SIGNAL
+else:
+    from signal import SIGTERM as TERM_SIGNAL
 
 
 class ProcessInfo(NamedTuple):
@@ -37,7 +44,7 @@ def kill_ports(*, ports: list[int], view_only: bool = False) -> int:
         process = pinfo.process
         print(f'- {process.name()} (pid {process.pid}) on port {pinfo.port}')
         if not view_only:
-            process.send_signal(SIGINT)
+            process.send_signal(TERM_SIGNAL)
 
     return 1 if processes else 0
 
