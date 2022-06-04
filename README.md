@@ -4,7 +4,7 @@ Kill processes using a given port on your laptop.
 
 ## Installation
 
-`pip install keyport`
+`pip install killport`
 
 ## Usage
 
