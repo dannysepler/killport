@@ -1,12 +1,27 @@
 from __future__ import annotations
 
 import http.server
+import re
+import signal
 
 import pytest
 
 from killport import get_processes, kill_ports
 
 PORT = 2345
+
+
+@pytest.fixture(scope='session', autouse=True)
+def term_handler():
+    # if a SIGTERM command is given, pytest abruptly stops
+    # https://github.com/pytest-dev/pytest/issues/5243
+
+    def do_nothing(*args, **kwargs):
+        ...
+
+    orig = signal.signal(signal.SIGTERM, do_nothing)
+    yield
+    signal.signal(signal.SIGTERM, orig)
 
 
 @pytest.fixture
@@ -26,20 +41,51 @@ def test_get_processes_when_process(server):
     assert len(get_processes([PORT])) == 1
 
 
-@pytest.mark.skip('Figure out how to test this')
-def test_kills_port_when_desired(server):
-    assert len(get_processes([PORT])) == 1
+def test_kills_port_when_desired(server, capsys):
     kill_ports(ports=[PORT])
-    assert len(get_processes([PORT])) == 0
+
+    output = capsys.readouterr().out
+    assert re.match(
+        'Killing:\n'
+        rf'- Python \(pid .*\) on port {PORT}',
+        output,
+    )
 
 
-def test_doesnt_destroy_irrelevant_port(server):
-    assert len(get_processes([PORT])) == 1
+def test_kills_processes_in_order_of_port(capsys):
+    Handler = http.server.BaseHTTPRequestHandler
+
+    # Spins off 5555 then 1111, we want to kill 1111 first
+    httpd_5555 = http.server.HTTPServer(('localhost', 5555), Handler)
+    httpd_1111 = http.server.HTTPServer(('localhost', 1111), Handler)
+
+    kill_ports(ports=[5555, 1111])
+
+    output = capsys.readouterr().out
+    assert re.match(
+        'Killing:\n'
+        r'- Python \(pid .*\) on port 1111\n'
+        r'- Python \(pid .*\) on port 5555',
+        output,
+    )
+
+    httpd_5555.server_close()
+    httpd_1111.server_close()
+
+
+def test_doesnt_destroy_irrelevant_port(server, capsys):
     kill_ports(ports=[PORT + 1])
-    assert len(get_processes([PORT])) == 1
+
+    output = capsys.readouterr().out
+    assert output == ''
 
 
-def test_view_only_doesnt_destroy_port(server):
-    assert len(get_processes([PORT])) == 1
+def test_view_only_doesnt_destroy_port(server, capsys):
     kill_ports(ports=[PORT], view_only=True)
-    assert len(get_processes([PORT])) == 1
+
+    output = capsys.readouterr().out
+    assert re.match(
+        'Would kill:\n'
+        rf'- Python \(pid .*\) on port {PORT}',
+        output,
+    )
