@@ -12,7 +12,7 @@ PORT = 2345
 
 @pytest.fixture(autouse=True)
 def mock_kill(mocker):
-    return mocker.patch('psutil.os.kill')
+    return mocker.patch('psutil.Process.kill')
 
 
 @pytest.fixture
