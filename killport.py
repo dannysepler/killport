@@ -33,8 +33,12 @@ def kill_ports(*, ports: list[int], view_only: bool = False) -> int:
         print('Killing:' if not view_only else 'Would kill:')
 
     for pinfo in processes:
+        emoji = '⚠️ ' if view_only else '❌'
         process = pinfo.process
-        print(f'- {process.name()} (pid {process.pid}) on port {pinfo.port}')
+        print(
+            f'{emoji} {process.name()} (pid {process.pid}) '
+            f'on port {pinfo.port}',
+        )
         if not view_only:
             process.kill()
 

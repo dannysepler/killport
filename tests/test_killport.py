@@ -40,7 +40,7 @@ def test_kills_port_when_desired(server, capsys, mock_kill):
     output = capsys.readouterr().out
     assert re.match(
         'Killing:\n'
-        rf'- \S* \(pid \d+\) on port {PORT}',
+        rf'❌ \S* \(pid \d+\) on port {PORT}',
         output,
     )
     assert mock_kill.call_count == 1
@@ -58,8 +58,8 @@ def test_kills_processes_in_order_of_port(capsys, mock_kill):
     output = capsys.readouterr().out
     assert re.match(
         'Killing:\n'
-        r'- \S* \(pid \d+\) on port 1111\n'
-        r'- \S* \(pid \d+\) on port 5555',
+        r'❌ \S* \(pid \d+\) on port 1111\n'
+        r'❌ \S* \(pid \d+\) on port 5555',
         output,
     )
     assert mock_kill.call_count == 2
@@ -82,7 +82,7 @@ def test_view_only_doesnt_destroy_port(server, capsys, mock_kill):
     output = capsys.readouterr().out
     assert re.match(
         'Would kill:\n'
-        rf'- \S* \(pid \d+\) on port {PORT}',
+        rf'⚠️  \S* \(pid \d+\) on port {PORT}',
         output,
     )
     assert mock_kill.call_count == 0
