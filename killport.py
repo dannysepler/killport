@@ -37,7 +37,6 @@ def kill_ports(*, ports: list[int], view_only: bool = False) -> int:
         process = pinfo.process
         print(f'- {process.name()} (pid {process.pid}) on port {pinfo.port}')
         if not view_only:
-            print(f'sending sigterm to {pinfo}')
             process.send_signal(SIGTERM)
 
     return 1 if processes else 0
