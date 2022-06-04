@@ -24,7 +24,7 @@ def get_processes(ports: list[int]) -> list[ProcessInfo]:
             if port in ports:
                 processes.add(ProcessInfo(port=port, process=process))
 
-    return sorted(processes, key=lambda p: (p.port, p.process.name()))
+    return sorted(processes, key=lambda p: p.port)
 
 
 def kill_ports(*, ports: list[int], view_only: bool = False) -> int:
