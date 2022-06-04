@@ -45,10 +45,9 @@ def test_kills_port_when_desired(server, capsys):
     kill_ports(ports=[PORT])
 
     output = capsys.readouterr().out
-    print(output)
     assert re.match(
         'Killing:\n'
-        rf'- Python \(pid \d+\) on port {PORT}',
+        rf'- \S* \(pid \d+\) on port {PORT}',
         output,
     )
 
@@ -63,11 +62,10 @@ def test_kills_processes_in_order_of_port(capsys):
     kill_ports(ports=[5555, 1111])
 
     output = capsys.readouterr().out
-    print(output)
     assert re.match(
         'Killing:\n'
-        r'- Python \(pid \d+\) on port 1111\n'
-        r'- Python \(pid \d+\) on port 5555',
+        r'- \S* \(pid \d+\) on port 1111\n'
+        r'- \S* \(pid \d+\) on port 5555',
         output,
     )
 
@@ -86,9 +84,8 @@ def test_view_only_doesnt_destroy_port(server, capsys):
     kill_ports(ports=[PORT], view_only=True)
 
     output = capsys.readouterr().out
-    print(output)
     assert re.match(
         'Would kill:\n'
-        rf'- Python \(pid \d+\) on port {PORT}',
+        rf'- \S* \(pid \d+\) on port {PORT}',
         output,
     )
