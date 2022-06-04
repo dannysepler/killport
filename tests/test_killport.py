@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import http.server
 import re
+from unittest import mock
 
 import pytest
 
@@ -11,8 +12,9 @@ PORT = 2345
 
 
 @pytest.fixture(autouse=True)
-def mock_kill(mocker):
-    return mocker.patch('psutil.Process.kill')
+def mock_kill():
+    with mock.patch('psutil.Process.kill') as p:
+        yield p
 
 
 @pytest.fixture
