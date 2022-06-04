@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-from signal import SIGTERM
 from typing import NamedTuple
 
 import psutil
@@ -37,19 +36,19 @@ def kill_ports(*, ports: list[int], view_only: bool = False) -> int:
         process = pinfo.process
         print(f'- {process.name()} (pid {process.pid}) on port {pinfo.port}')
         if not view_only:
-            process.send_signal(SIGTERM)
+            process.kill()
 
     return 1 if processes else 0
 
 
-def main() -> None:
+def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('ports', type=int, nargs='*')
     parser.add_argument('--view-only', action='store_true')
     args = parser.parse_args()
 
-    kill_ports(ports=args.ports, view_only=args.view_only)
+    return kill_ports(ports=args.ports, view_only=args.view_only)
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())
