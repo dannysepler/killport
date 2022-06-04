@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import argparse
-from signal import SIGTERM
+from signal import SIGINT
 from typing import NamedTuple
 
 import psutil
@@ -37,7 +37,7 @@ def kill_ports(*, ports: list[int], view_only: bool = False) -> int:
         process = pinfo.process
         print(f'- {process.name()} (pid {process.pid}) on port {pinfo.port}')
         if not view_only:
-            process.send_signal(SIGTERM)
+            process.send_signal(SIGINT)
 
     return 1 if processes else 0
 

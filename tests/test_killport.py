@@ -13,15 +13,15 @@ PORT = 2345
 
 @pytest.fixture(scope='session', autouse=True)
 def term_handler():
-    # if a SIGTERM command is given, pytest abruptly stops
+    # if a SIGINT command is given, pytest abruptly stops
     # https://github.com/pytest-dev/pytest/issues/5243
 
     def do_nothing(*args, **kwargs):
         ...
 
-    orig = signal.signal(signal.SIGTERM, do_nothing)
+    orig = signal.signal(signal.SIGINT, do_nothing)
     yield
-    signal.signal(signal.SIGTERM, orig)
+    signal.signal(signal.SIGINT, orig)
 
 
 @pytest.fixture
