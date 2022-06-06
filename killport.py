@@ -28,6 +28,9 @@ def get_processes(ports: list[int]) -> list[ProcessInfo]:
 
 
 def kill_ports(*, ports: list[int], view_only: bool = False) -> int:
+    if not ports:
+        raise ValueError('Please supply a list of ports to kill')
+
     processes = get_processes(ports)
     if processes:
         print('Killing:' if not view_only else 'Would kill:')

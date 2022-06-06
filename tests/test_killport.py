@@ -26,6 +26,11 @@ def server() -> http.server.HTTPServer:
     httpd.server_close()
 
 
+def test_errs_if_no_ports_given():
+    with pytest.raises(ValueError):
+        kill_ports(ports=[])
+
+
 def test_get_processes_when_no_process():
     assert len(get_processes([PORT])) == 0
 
