@@ -26,9 +26,9 @@ def server() -> http.server.HTTPServer:
     httpd.server_close()
 
 
-def test_errs_if_no_ports_given():
-    with pytest.raises(ValueError):
-        kill_ports(ports=[])
+def test_errs_if_no_ports_given(capsys):
+    kill_ports(ports=[])
+    assert capsys.readouterr().out == 'Please supply a list of ports to kill\n'
 
 
 def test_get_processes_when_no_process():
